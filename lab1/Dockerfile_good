@@ -1,0 +1,20 @@
+# Использование конкретной версии
+FROM python:3.11-slim
+
+# Копирование только нужных файлов
+COPY requirements.txt /workdir/
+COPY app/ /workdir/app/
+COPY model/ /workdir/model/
+
+WORKDIR /workdir
+
+# Не сохраяется кэш во время установки зависимостей
+# Команды объединены
+RUN mkdir -p /workdir/logs && pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# Указана конкретная точка монтирования
+VOLUME ["/workdir/logs"]
+
+# Использование переменных окружения
+EXPOSE $PORT
+CMD ["sh", "-c", "uvicorn app.app:app --host 0.0.0.0 --port $PORT"]

@@ -1,0 +1,20 @@
+# Использование не фиксированной версии
+FROM python:latest
+
+# Неоптимальное копирование
+COPY . /workdir
+
+WORKDIR /workdir
+
+# Сохраяется кэш во время установки зависимостей
+RUN pip install --upgrade pip
+# Создаются лишние слои
+RUN pip install -r requirements.txt
+
+# Не указана точка монтирования (и еще один лишний слой)
+RUN mkdir -p /workdir/logs
+VOLUME ./logs
+
+# Хардкод порта
+EXPOSE 8080
+CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8080"]
